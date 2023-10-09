@@ -1,0 +1,175 @@
+install razorpay (npm i razorpay )
+make instance to access resources from razorpay API (taki api access kar paye razor pay ki) key id : rzp_test_hRRXG0Yj1zPNJF , key secret : QPs4GI8GtYDsBJgC96yH1PmF
+make checkout page (front-end)
+make post route from url=> '/create/orderId' on index.js 
+copy order creation code and paste in index.js inside that router and add res.send(order)
+Add jquery CDN (<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>)
+copy generate order code and paste in your checkout page inside Script 
+copy checkout option code and paste in you checkout page. 
+copy verify payment code and paste in index.js (replace app=>router)
+copy call signature validation code and paste in your checkout page inside options => handler and then call that method
+
+documentation => https://razorpay.com/docs/payments/server-integration/nodejs/install/
+
+step:1 Install the Razorpay Node.js SDK: npm i razorpay
+step:2 Instantiate the Razorpay Instance in server file i.e index.js : var instance = new Razorpay({
+                                                                       key_id: 'YOUR_KEY_ID',
+                                                                       key_secret: 'YOUR_KEY_SECRET',
+                                                                       });
+step:3 make a post route '/create/orderId' :
+step:4 create an order in server : 
+
+router.post('/create/orderId', (req, res) => {
+  try {
+    var instance = new Razorpay({ key_id: 'rzp_test_hRRXG0Yj1zPNJF', key_secret: 'QPs4GI8GtYDsBJgC96yH1PmF' })
+
+    var options = {
+      amount: 50000,  // amount in the smallest currency unit
+      currency: "INR",
+      receipt: "order_rcptid_11"
+    };
+    instance.orders.create(options, function (err, order) {
+      console.log(order);
+      res.send(order)
+    });
+
+  } catch (error) {
+    console.log(error)
+  }
+})
+step:5 generate order in front end: 
+
+var orderId ;
+$(document).ready(function(){
+    var settings = {
+  "url": "/create/orderId",
+  "method": "POST",
+  "timeout": 0,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "data": JSON.stringify({
+    "amount": "50000"
+  }),
+};
+})
+step:7 Code to Add Pay Button in button:  id="rzp-button1"
+step:8 add script in page <script src="https://checkout.razorpay.com/v1/checkout.js"></script> 
+step:9 add  document.getElementById('rzp-button1').onclick = function(e){
+                                                        e.preventDefault();
+step:10  add //creates new orderId everytime
+$.ajax(settings).done(function (response) {
+
+  console.log(response);
+
+step:11 Add check out options in the response where orderId is coming 
+
+var options = {
+    "key": "YOUR_KEY_ID", // Enter the Key ID generated from the Dashboard
+    "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Acme Corp",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature)
+    },
+    "prefill": {
+        "name": "Gaurav Kumar",
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+ 
+});
+    rzp1.open();
+}
+
+
+generate order*=============
+
+var orderId ;
+$(document).ready(function(){
+    var settings = {
+  "url": "/create/orderId",
+  "method": "POST",
+  "timeout": 0,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "data": JSON.stringify({
+    "amount": "50000"
+  }),
+};
+})
+on button click*===========
+document.getElementById('rzp-button1').onclick = function(e){
+    e.preventDefault();
+
+generate order*===================
+
+    //creates new orderId everytime//
+$.ajax(settings).done(function (response) {
+ console.log(response);
+
+ add checkout options*====================
+    var options = {
+    "key": "rzp_test_hRRXG0Yj1zPNJF", // Enter the Key ID generated from the Dashboard
+    "amount": "response.amount", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Acme Corp",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "response.id", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature)
+    },
+    "prefill": {
+        "name": "Gaurav Kumar",
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+    rzp1.open();
+})
+};
+
+to verify payment signature 
+step1 make a post route to verify 
+setp2 
+router.post('/api/payment/verify',(req,res)=>{
+
+var { 
+  validatePaymentVerification, 
+  validateWebhookSignature } = require('./dist/utils/razorpay-utils');
+  
+})
+
+Generate Signature on Your Server
